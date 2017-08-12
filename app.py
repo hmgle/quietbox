@@ -1,7 +1,7 @@
 # /usr/bin/env python
 
 from flask import Flask, jsonify
-import glob, os
+import glob, os, subprocess
 
 app = Flask(__name__)
 local_music = []
@@ -12,8 +12,8 @@ def miao():
     return "miao"
 
 
-@app.route('/youdao/<int:list_id>', methods=['GET'])
-def get_youdao(list_id):
+@app.route('/163/<int:list_id>', methods=['GET'])
+def get_163(list_id):
     # TODO
     return jsonify({'list': list_id})
 
@@ -27,8 +27,7 @@ def local_play(id):
     for item in local_music:
         if item["id"] == id:
             file_path = item["name"]
-            wfd.write("\nL " + file_path + "\n")
-            wfd.flush()
+            os.write(wfd, "\nL " + file_path + "\n")
             return "ok"
     return "not found"
 
@@ -44,6 +43,9 @@ except OSError, e:
     print "Failed to create FIFO: %s" % e
 
 if __name__ == '__main__':
-    wfd = open(FIFO, "w")
+    subprocess.Popen(['mpg123', '-R',  '--fifo', FIFO],
+                     stdin=subprocess.PIPE,
+                     stdout=subprocess.PIPE)
+    wfd = os.open(FIFO, os.O_NONBLOCK | os.O_WRONLY)
     load_local()
     app.run()
