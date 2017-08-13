@@ -21,6 +21,9 @@
             <button @click="wangye_play(m.id)">播放</button>
          </div>
       </div>
+      <button @click="wangye_list_play()">播放以上歌单</button>
+      <button @click="prev()">上一首</button>
+      <button @click="next()">下一首</button>
       <button @click="pause()">暂停</button>
    </div>
 
@@ -32,6 +35,7 @@
          el: '#app',
          data: {
             loc_musics: [],
+            wangye_list_id: '879189690',
             wangye_musics: []
          },
          compiled: function() {
@@ -39,7 +43,7 @@
             self.$http.get('/local/list').then(function(res) {
                self.loc_musics = res.data.musics;
             });
-            self.$http.get('/163/804411834').then(function(res) {
+            self.$http.get('/163/'+self.wangye_list_id).then(function(res) {
                self.wangye_musics = res.data.musics;
             });
          },
@@ -55,7 +59,19 @@
             wangye_play: function(id) {
                var self = this;
                self.$http.get('/163/play/'+id);
-            }
+            },
+            wangye_list_play: function() {
+               var self = this;
+               self.$http.get('/163/play_list/'+self.wangye_list_id);
+            },
+            prev: function() {
+               var self = this;
+               self.$http.get('/163/prev');
+            },
+            next: function() {
+               var self = this;
+               self.$http.get('/163/next');
+            },
          }
 })
    </script>
