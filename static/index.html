@@ -21,10 +21,11 @@
             <button @click="wangye_play(m.id)">播放</button>
          </div>
       </div>
+      <button @click="pause()">暂停</button>
    </div>
 
 
-   <script src="http://cdnjs.cloudflare.com/ajax/libs/vue/1.0.26/vue.js"></script>
+   <script src="http://cdnjs.cloudflare.com/ajax/libs/vue/1.0.26/vue.min.js"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/0.9.3/vue-resource.min.js"></script>
    <script>
       var vue = new Vue({
@@ -43,6 +44,10 @@
             });
          },
          methods: {
+            pause: function() {
+               var self = this;
+               self.$http.get('/pause');
+            },
             loc_play: function(id) {
                var self = this;
                self.$http.get('/local/play/'+id);

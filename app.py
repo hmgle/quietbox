@@ -59,6 +59,12 @@ def wangye_play(id):
     return "not found"
 
 
+@app.route('/pause', methods=['GET'])
+def pause():
+    os.write(wfd, "\nP\n")
+    return "ok"
+
+
 def load_local():
     for file in glob.glob("*.mp3"):
         local_musics.append({"id": len(local_musics),  "name": file})
