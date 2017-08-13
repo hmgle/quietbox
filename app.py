@@ -20,6 +20,11 @@ def get_163_playlist(playlist_id):
     return playlist
 
 
+def get_163_song_url(song_id):
+    song = nbox.songs_detail_new_api([song_id])
+    return song[0]['url']
+
+
 @app.route('/')
 def index():
     return app.send_static_file('index.html')
@@ -47,7 +52,10 @@ def local_play(id):
 
 @app.route('/163/play/<int:id>', methods=['GET'])
 def wangye_play(id):
-    # TODO
+    song_url = get_163_song_url(id)
+    if song_url is not None:
+        os.write(wfd, "\nL " + song_url + "\n")
+        return "ok"
     return "not found"
 
 
