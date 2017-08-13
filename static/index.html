@@ -4,13 +4,21 @@
    <title>quietbox</title>
 </head>
 <body>
-<h1>list</h1>
    <div id="app" v-cloak>
-      <div v-for="m in musics">
+      <h3>本地<h3>
+      <div v-for="m in loc_musics">
          <div>
             {{ m.id }}
             {{ m.name }}
-            <button @click="play(m.id)">播放</button>
+            <button @click="loc_play(m.id)">播放</button>
+         </div>
+      </div>
+      <h3>网易云音乐<h3>
+      <div v-for="m in wangye_musics">
+         <div>
+            {{ m.id }}
+            {{ m.name }}
+            <button @click="wangye_play(m.id)">播放</button>
          </div>
       </div>
    </div>
@@ -22,18 +30,26 @@
       var vue = new Vue({
          el: '#app',
          data: {
-            musics: []
+            loc_musics: [],
+            wangye_musics: []
          },
          compiled: function() {
             var self = this;
             self.$http.get('/local/list').then(function(res) {
-               self.musics = res.data.musics;
+               self.loc_musics = res.data.musics;
+            });
+            self.$http.get('/163/804411834').then(function(res) {
+               self.wangye_musics = res.data.musics;
             });
          },
          methods: {
-            play: function(id) {
+            loc_play: function(id) {
                var self = this;
                self.$http.get('/local/play/'+id);
+            },
+            wangye_play: function(id) {
+               var self = this;
+               self.$http.get('/163/play/'+id);
             }
          }
 })
