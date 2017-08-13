@@ -2,14 +2,16 @@
 
 from flask import Flask, jsonify
 import glob, os, subprocess
+from time import sleep
 
 app = Flask(__name__)
 local_music = []
 FIFO = '/tmp/quietbox.fifo'
 
 @app.route('/')
-def miao():
-    return "miao"
+def index():
+    # return render_template('index.html',items=local_music)
+    return app.send_static_file('index.html')
 
 
 @app.route('/163/<int:list_id>', methods=['GET'])
@@ -20,7 +22,7 @@ def get_163(list_id):
 
 @app.route('/local/list', methods=['GET'])
 def get_local():
-    return jsonify(local_music)
+    return jsonify({'musics': local_music})
 
 @app.route('/local/play/<int:id>', methods=['GET'])
 def local_play(id):
@@ -37,15 +39,14 @@ def load_local():
         local_music.append({"id": len(local_music),  "name": file})
 
 
-try:
-    os.mkfifo(FIFO)
-except OSError, e:
-    print "Failed to create FIFO: %s" % e
 
 if __name__ == '__main__':
-    subprocess.Popen(['mpg123', '-R',  '--fifo', FIFO],
-                     stdin=subprocess.PIPE,
-                     stdout=subprocess.PIPE)
+    try:
+        os.mkfifo(FIFO)
+    except OSError, e:
+        print "Failed to create FIFO: %s" % e
+    subprocess.Popen(['mpg123', '-R',  '--fifo', FIFO])
+    sleep(0.1)
     wfd = os.open(FIFO, os.O_NONBLOCK | os.O_WRONLY)
     load_local()
-    app.run()
+    app.run(host='0.0.0.0', port=8888)
